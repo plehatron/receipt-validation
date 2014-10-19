@@ -7,7 +7,7 @@ use Exception;
 class Response
 {
     /**
-     *
+     * Status is OK.
      */
     const STATUS_OK = 0;
 
@@ -67,14 +67,27 @@ class Response
     protected $statusCode;
 
     /**
+     * Receipt that was sent for verification.
+     *
      * @var array
      */
     protected $receipt = [];
 
     /**
-     * @var array
+     * Available only for iOS 6 style transaction receipts for auto-renewable subscriptions.
+     * The base-64 encoded transaction receipt for the most recent renewal.
+     *
+     * @var mixed
      */
-    protected $purchases = [];
+    protected $latestReceipt;
+
+    /**
+     * Available only for iOS 6 style transaction receipts for auto-renewable subscriptions.
+     * The JSON representation of the receipt for the most recent renewal.
+     *
+     * @var mixed
+     */
+    protected $latestReceiptInfo;
 
     /**
      * @param $responseData
@@ -93,11 +106,14 @@ class Response
     }
 
     /**
-     * @return array
+     * @return bool
      */
-    public function getPurchases()
+    public function valid()
     {
-        return $this->purchases;
+        if ($this->statusCode == self::STATUS_OK) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -109,14 +125,19 @@ class Response
     }
 
     /**
-     * @return bool
+     * @return mixed
      */
-    public function isValid()
+    public function getLatestReceipt()
     {
-        if ($this->statusCode == self::STATUS_OK) {
-            return true;
-        }
-        return false;
+        return $this->latestReceipt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLatestReceiptInfo()
+    {
+        return $this->latestReceiptInfo;
     }
 
     /**
@@ -124,7 +145,7 @@ class Response
      * @return $this
      * @throws Exception
      */
-    public function parseResponse($responseData)
+    protected function parseResponse($responseData)
     {
         if (!is_array($responseData)) {
             throw new Exception('Invalid response data. Expected array, got ' . substr(var_export($responseData, true), 0, 100));
@@ -140,8 +161,12 @@ class Response
             $this->receipt = $responseData['receipt'];
         }
 
-        if (array_key_exists('purchases', $responseData)) {
-            $this->purchases = $responseData['purchases'];
+        if (array_key_exists('latest_receipt', $responseData)) {
+            $this->latestReceipt = $responseData['latest_receipt'];
+        }
+
+        if (array_key_exists('latest_receipt_info', $responseData)) {
+            $this->latestReceiptInfo = $responseData['latest_receipt_info'];
         }
 
         return $this;

@@ -3,21 +3,21 @@
 namespace Plehatron\ReceiptValidation\iTunes;
 
 use Exception;
-use Guzzle\Http\Client as GuzzleClient;
+use Guzzle\Http\Client;
 use InvalidArgumentException;
 use RuntimeException;
 
 class Validator
 {
-    const URL_PRODUCTION = 'https://buy.itunes.apple.com';
-    const URL_SANDBOX = 'https://sandbox.itunes.apple.com';
+    const URI_PRODUCTION = 'https://buy.itunes.apple.com';
+    const URI_SANDBOX = 'https://sandbox.itunes.apple.com';
 
     /**
      * iTunes base URI.
      *
      * @var string
      */
-    private $baseUri;
+    private $baseUri = self::URI_SANDBOX;
 
     /**
      * App's shared secret.
@@ -32,19 +32,23 @@ class Validator
     private $receiptData;
 
     /**
-     * @var
+     * @var Client
      */
     private $httpClient;
 
     /**
      * @param string $uri
      */
-    public function __construct($uri = self::URL_SANDBOX)
+    public function __construct($uri = null)
     {
-        $this->baseUri = $uri;
+        if (!is_null($uri)) {
+            $this->baseUri = $uri;
+        }
     }
 
     /**
+     * Sets app's shared secret.
+     *
      * @param string $secret
      * @return $this
      */
@@ -55,6 +59,8 @@ class Validator
     }
 
     /**
+     * Gets receipt data.
+     *
      * @return string
      */
     public function getReceiptData()
@@ -63,6 +69,8 @@ class Validator
     }
 
     /**
+     * Sets receipt data.
+     *
      * @param string $data
      * @return $this
      */
@@ -75,49 +83,44 @@ class Validator
     /**
      * Returns HTTP client
      *
-     * @return GuzzleClient
+     * @return Client
      */
     protected function getClient()
     {
         if (is_null($this->httpClient)) {
-            $this->httpClient = new GuzzleClient($this->baseUri);
+            $this->httpClient = new Client($this->baseUri);
         }
         return $this->httpClient;
     }
 
     /**
+     * Encodes receipt data and shared app secret as json.
+     *
      * @return string
      */
     private function encodePayload()
     {
-        return json_encode([
-            'receipt-data' => $this->getReceiptData(),
-            'password' => $this->secret
-        ]);
+        $data = [
+            'receipt-data' => $this->getReceiptData()
+        ];
+        if (!is_null($this->secret)) {
+            $data['password'] = $this->secret;
+        }
+        return json_encode($data);
     }
 
     /**
-     * @param null $receiptData
-     * @param null $secret
+     * Validates receipt data by submitting it to iTunes server and returns response object containing
+     * status code, detailed receipt and purchase data.
+     *
      * @return Response
      * @throws InvalidArgumentException
      * @throws Exception
      */
-    public function validate($receiptData = null, $secret = null)
+    public function validate()
     {
-        if (!is_null($receiptData)) {
-            $this->setReceiptData($receiptData);
-        }
-        if (!is_null($secret)) {
-            $this->setSecret($secret);
-        }
-
         if (is_null($this->receiptData)) {
             throw new InvalidArgumentException('Receipt data is not set');
-        }
-
-        if (is_null($this->secret)) {
-            throw new InvalidArgumentException('App\'s shared secret is not set');
         }
 
         $payload = $this->encodePayload();
