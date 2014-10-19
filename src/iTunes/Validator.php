@@ -17,24 +17,24 @@ class Validator
      *
      * @var string
      */
-    private $baseUri = self::URI_SANDBOX;
+    protected $baseUri = self::URI_SANDBOX;
 
     /**
      * App's shared secret.
      *
      * @var string
      */
-    private $secret;
+    protected $secret;
 
     /**
      * @var string
      */
-    private $receiptData;
+    protected $receiptData;
 
     /**
      * @var Client
      */
-    private $httpClient;
+    protected $httpClient;
 
     /**
      * @param string $uri
@@ -98,7 +98,7 @@ class Validator
      *
      * @return string
      */
-    private function encodePayload()
+    protected function encodePayload()
     {
         $data = [
             'receipt-data' => $this->getReceiptData()
@@ -125,7 +125,7 @@ class Validator
 
         $payload = $this->encodePayload();
 
-        $httpResponse = $this->getClient()->post('/verifyReceipt', null, $payload, ['verify' => false])->send();
+        $httpResponse = $this->getClient()->post('/verifyReceipt', null, $payload)->send();
 
         if ($httpResponse->getStatusCode() != 200) {
             throw new RuntimeException(sprintf('Invalid HTTP response code (%s) from iTunes server', $httpResponse->getStatusCode()));

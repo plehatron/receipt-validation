@@ -1,5 +1,6 @@
 {
     "name": "plehatron/receipt-validation",
+    "description": "iTunes Receipt validation",
     "license": "MIT",
     "authors": [
         {
