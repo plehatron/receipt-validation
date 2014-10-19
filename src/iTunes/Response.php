@@ -147,26 +147,26 @@ class Response
      */
     protected function parseResponse($responseData)
     {
-        if (!is_array($responseData)) {
-            throw new Exception('Invalid response data. Expected array, got ' . substr(var_export($responseData, true), 0, 100));
+        if (!is_object($responseData)) {
+            throw new Exception('Invalid response data. Expected object, got ' . gettype($responseData));
         }
 
-        if (array_key_exists('status', $responseData)) {
-            $this->statusCode = $responseData['status'];
+        if (property_exists($responseData, 'status')) {
+            $this->statusCode = $responseData->status;
         } else {
             $this->statusCode = self::STATUS_UNKNOWN;
         }
 
-        if (array_key_exists('receipt', $responseData)) {
-            $this->receipt = $responseData['receipt'];
+        if (property_exists($responseData, 'receipt')) {
+            $this->receipt = $responseData->receipt;
         }
 
-        if (array_key_exists('latest_receipt', $responseData)) {
-            $this->latestReceipt = $responseData['latest_receipt'];
+        if (property_exists($responseData, 'latest_receipt')) {
+            $this->latestReceipt = $responseData->latest_receipt;
         }
 
-        if (array_key_exists('latest_receipt_info', $responseData)) {
-            $this->latestReceiptInfo = $responseData['latest_receipt_info'];
+        if (property_exists($responseData, 'latest_receipt_info')) {
+            $this->latestReceiptInfo = $responseData->latest_receipt_info;
         }
 
         return $this;

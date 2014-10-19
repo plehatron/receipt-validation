@@ -131,7 +131,7 @@ class Validator
             throw new RuntimeException(sprintf('Invalid HTTP response code (%s) from iTunes server', $httpResponse->getStatusCode()));
         }
 
-        $response = new Response($httpResponse->json());
+        $response = new Response(json_decode($httpResponse->getBody(true)));
 
         return $response;
     }
