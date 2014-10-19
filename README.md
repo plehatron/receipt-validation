@@ -1,4 +1,2 @@
-receipt-validator
-=================
-
-Receipt Validator
+Receipt Validation
+==================

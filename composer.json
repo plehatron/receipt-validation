@@ -1,0 +1,20 @@
+{
+    "name": "plehatron/receipt-validation",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Davor Plehati",
+            "email": "dplehati@gmail.com"
+        }
+    ],
+    "require" : {
+        "php" : ">=5.5",
+        "guzzle/guzzle" : "3.9.*",
+        "symfony/console": "2.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Plehatron\\ReceiptValidation\\": "src/"
+        }
+    }
+}

@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+use Plehatron\ReceiptValidation\iTunes\Console\VerifyCommand;
+use Symfony\Component\Console\Application;
+
+if (is_file(__DIR__ . '/../vendor/autoload.php')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+} else if (is_file(__DIR__ . '/../../../autoload.php')) {
+    require_once __DIR__ . '/../../../autoload.php';
+} else if (is_file(__DIR__ . '/../autoload.php')) {
+    require_once __DIR__ . '/../autoload.php';
+}
+
+$console = new Application();
+$console->add(new VerifyCommand());
+$console->run();
